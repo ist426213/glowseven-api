@@ -1,0 +1,57 @@
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# VIRTUAL ENVIRONMENTS
+# =========================
+.env
+.env.*
+venv/
+.venv/
+ENV/
+env/
+
+# =========================
+# DJANGO
+# =========================
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+local_settings.py
+
+# Migrations (keep or ignore based on your workflow)
+# */migrations/
+# !*/migrations/__init__.py
+
+# =========================
+# LOGS & CACHE
+# =========================
+*.log
+celerybeat-schedule
+celerybeat.pid
+
+# =========================
+# TESTING
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# =========================
+# IDE / EDITORS
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db
