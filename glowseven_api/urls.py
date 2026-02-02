@@ -19,8 +19,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
+
 
 urlpatterns = [
+
+    # force root to admin
+    path("", RedirectView.as_view(url="/admin/", permanent=False)),
 
     path("api/", include("categories.urls")),
     path("api/", include("products.urls")),
