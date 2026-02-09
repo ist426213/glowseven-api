@@ -6,7 +6,15 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ["id", "title", "slug", "description", "image"]
+        fields = [
+            "id",
+            "title",
+            "slug",
+            "description",
+            "image",
+            "is_active",
+            "is_visible",
+        ]
 
     def get_image(self, obj):
         request = self.context.get("request")

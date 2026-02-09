@@ -8,7 +8,7 @@ from products.models import Product
 class CollectionListAPIView(ListAPIView):
 
     serializer_class = CollectionSerializer
-    queryset = Collection.objects.filter(is_active=True)
+    queryset = Collection.objects.filter(is_visible=True)
 
     def get_serializer_context(self):
         return {"request": self.request}

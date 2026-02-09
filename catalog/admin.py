@@ -42,8 +42,8 @@ class ProductInline(admin.TabularInline):
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ("title", "slug", "is_active")
-    list_filter = ("is_active",)
+    list_display = ("title", "slug", "is_active", "is_visible")
+    list_filter = ("is_active", "is_visible")
     search_fields = ("title",)
     prepopulated_fields = {"slug": ("title",)}
 

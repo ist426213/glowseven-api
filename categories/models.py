@@ -11,6 +11,7 @@ class Category(models.Model):
         help_text="Banner large image for category page"
     )
     is_active = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]

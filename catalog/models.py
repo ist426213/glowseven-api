@@ -6,6 +6,7 @@ class Collection(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to="collections/")
     is_active = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["title"]
