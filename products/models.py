@@ -77,6 +77,16 @@ class Product(models.Model):
         default="Envio em 1–2 dias úteis. Devolução grátis em 30 dias.",
     )
 
+    # Best Seller flags
+    is_best_seller = models.BooleanField(
+        default=False,
+        help_text="Marcar como Best Seller para aparecer na seção de destaque"
+    )
+    best_seller_position = models.PositiveIntegerField(
+        default=0,
+        help_text="Posição no ranking de Best Sellers (1 = primeiro lugar)"
+    )
+
     # Flags (logic, not labels)
     is_active = models.BooleanField(default=True)
     is_new = models.BooleanField(default=False)

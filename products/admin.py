@@ -41,8 +41,10 @@ class ProductAdmin(admin.ModelAdmin):
         "name",
         "category",
         "price",
-        "is_featured",   # ✅
-        "is_new",        # ✅
+        "is_best_seller",      # ✅ NOVO
+        "best_seller_position", # ✅ NOVO
+        "is_featured",
+        "is_new",
         "is_active",
         "created_at",
     )
@@ -50,8 +52,9 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = (
         "category",
         "is_active",
-        "is_featured",   # ✅
-        "is_new",        # ✅
+        "is_best_seller",      # ✅ NOVO
+        "is_featured",
+        "is_new",
         "collections",
     )
 
@@ -105,13 +108,23 @@ class ProductAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Homepage Visibility",   # ✅ VERY IMPORTANT
+            "Homepage Visibility",
             {
                 "fields": (
                     "is_featured",
                     "is_new",
                 ),
                 "description": "Controls homepage sections like Featured & New arrivals.",
+            },
+        ),
+        (
+            "Best Sellers",  # ✅ NOVO: Secção dedicada para Best Sellers
+            {
+                "fields": (
+                    "is_best_seller",
+                    "best_seller_position",
+                ),
+                "description": "Configuração para a seção Best Sellers. A posição define a ordem de exibição (1 = primeiro lugar).",
             },
         ),
         (
@@ -147,6 +160,9 @@ class ProductAdmin(admin.ModelAdmin):
         "unmark_as_featured",
         "mark_as_new",
         "unmark_as_new",
+        "mark_as_best_seller",       # ✅ NOVO
+        "unmark_as_best_seller",     # ✅ NOVO
+        "set_best_seller_position",  # ✅ NOVO
     ]
 
     @admin.action(description="Mark selected products as Featured")
@@ -164,6 +180,32 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.action(description="Remove New flag from selected products")
     def unmark_as_new(self, request, queryset):
         queryset.update(is_new=False)
+
+    # ✅ NOVAS AÇÕES PARA BEST SELLERS
+
+    @admin.action(description="Mark selected products as Best Sellers")
+    def mark_as_best_seller(self, request, queryset):
+        queryset.update(is_best_seller=True)
+
+    @admin.action(description="Remove Best Seller flag from selected products")
+    def unmark_as_best_seller(self, request, queryset):
+        queryset.update(is_best_seller=False)
+
+    @admin.action(description="Set Best Seller position (1-based)")
+    def set_best_seller_position(self, request, queryset):
+        # Esta ação abre um formulário para definir a posição
+        # Mas como o Django admin não suporta facilmente isso, 
+        # vamos apenas numerar sequencialmente os selecionados
+        position = 1
+        for product in queryset.order_by('id'):
+            product.best_seller_position = position
+            product.is_best_seller = True
+            product.save()
+            position += 1
+        self.message_user(
+            request, 
+            f"Best Seller positions set from 1 to {position - 1} for {queryset.count()} products."
+        )
 
 
 # --------------------------------------------------

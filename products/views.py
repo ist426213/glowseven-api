@@ -1,3 +1,4 @@
+# views.py
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from .models import Product
 from .serializers import ProductSerializer, ProductDetailSerializer
@@ -46,7 +47,6 @@ class ProductByCategoryAPIView(ListAPIView):
         return qs.distinct()
     
 
-
 class ProductDetailAPIView(RetrieveAPIView):
     serializer_class = ProductDetailSerializer
     lookup_field = "slug"
@@ -63,42 +63,15 @@ class ProductDetailAPIView(RetrieveAPIView):
                 "variants__color",
             )
         )
-    
 
-""" class CategoryFiltersAPIView(APIView):
-    def get(self, request, slug):
-        variants = ProductVariant.objects.filter(
-            product__category__slug=slug,
-            product__is_active=True,
-            stock__gt=0
-        ).select_related("size", "material", "color")
-
-        sizes = sorted({v.size.value for v in variants})
-        materials = sorted({v.material.name for v in variants})
-        colors = {
-            v.color.name: v.color.hex_code
-            for v in variants
-        }
-
-        return Response({
-            "sizes": sizes,
-            "materials": materials,
-            "colors": [
-                {"name": name, "hex": hex}
-                for name, hex in colors.items()
-            ],
-        })
-     """
 
 class CategoryFiltersAPIView(APIView):
     def get(self, request, slug):
-
         variants = ProductVariant.objects.filter(
             product__is_active=True,
             stock__gt=0
         )
 
-        # ✅ ONLY filter by category if slug != "all"
         if slug != "all":
             variants = variants.filter(product__category__slug=slug)
 
@@ -123,7 +96,6 @@ class CategoryFiltersAPIView(APIView):
 
 
 class FeaturedProductListAPIView(ListAPIView):
-
     serializer_class = ProductSerializer
 
     def get_queryset(self):
@@ -131,5 +103,21 @@ class FeaturedProductListAPIView(ListAPIView):
             Product.objects
             .filter(is_active=True, is_featured=True)
             .select_related("category")
-            .order_by("-created_at")[:8]  # limit homepage load
+            .order_by("-created_at")[:8]
+        )
+
+
+# NOVO: Best Sellers API View
+class BestSellersListAPIView(ListAPIView):
+    """
+    Retorna os produtos marcados como Best Sellers, ordenados por posição.
+    """
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        return (
+            Product.objects
+            .filter(is_active=True, is_best_seller=True)
+            .select_related("category")
+            .order_by("best_seller_position")[:10]  # Limite de 10 best sellers
         )
