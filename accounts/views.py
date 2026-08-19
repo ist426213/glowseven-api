@@ -346,25 +346,69 @@ class AddressSetDefaultView(APIView):
 # ============================================================
 # FAVORITOS (WISHLIST)
 # ============================================================
-class WishlistListCreateView(generics.ListCreateAPIView):
+class WishlistListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = WishlistSerializer
 
-    def get_queryset(self):
-        return Wishlist.objects.filter(user_profile__user=self.request.user)
+    def get(self, request):
+        wishlist = Wishlist.objects.filter(user_profile__user=request.user)
+        serializer = WishlistSerializer(wishlist, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def perform_create(self, serializer):
-        serializer.save(user_profile=self.request.user.profile)
+    def post(self, request):
+        # Espera receber product_id
+        product_id = request.data.get('product_id')
+        if not product_id:
+            return Response({'error': 'product_id é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verifica se já existe
+        existing = Wishlist.objects.filter(user_profile__user=request.user, product_id=product_id).first()
+        if existing:
+            return Response({'error': 'Produto já está nos favoritos'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Cria
+        wishlist_item = Wishlist.objects.create(user_profile=request.user.profile, product_id=product_id)
+        serializer = WishlistSerializer(wishlist_item)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class WishlistDestroyView(generics.DestroyAPIView):
+class WishlistDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = WishlistSerializer
 
-    def get_queryset(self):
-        return Wishlist.objects.filter(user_profile__user=self.request.user)
+    def delete(self, request, pk):
+        try:
+            wishlist_item = Wishlist.objects.get(pk=pk, user_profile__user=request.user)
+        except Wishlist.DoesNotExist:
+            return Response({'error': 'Item não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        wishlist_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class WishlistToggleView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('product_id')
+        if not product_id:
+            return Response({'error': 'product_id é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verificar se já existe
+        wishlist_item = Wishlist.objects.filter(
+            user_profile__user=request.user,
+            product_id=product_id
+        ).first()
+
+        if wishlist_item:
+            wishlist_item.delete()
+            return Response({'added': False}, status=status.HTTP_200_OK)
+        else:
+            Wishlist.objects.create(
+                user_profile=request.user.profile,
+                product_id=product_id
+            )
+            return Response({'added': True}, status=status.HTTP_201_CREATED)
+
+        
 class AddressFromOrderView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]

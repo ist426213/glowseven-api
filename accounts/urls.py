@@ -10,10 +10,11 @@ from .views import (
     AddressListCreateView,
     AddressRetrieveUpdateDestroyView,
     AddressSetDefaultView,
-    WishlistListCreateView,
-    WishlistDestroyView,
+    WishlistListView,
+    WishlistDetailView,
     CreateUserWithRandomPasswordView,
-    AddressFromOrderView
+    AddressFromOrderView,
+    WishlistToggleView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -42,8 +43,9 @@ urlpatterns = [
     path('addresses/<int:pk>/set-default/', AddressSetDefaultView.as_view(), name='address-set-default'),
 
     # Favoritos (Wishlist)
-    path('wishlist/', WishlistListCreateView.as_view(), name='wishlist-list'),
-    path('wishlist/<int:pk>/', WishlistDestroyView.as_view(), name='wishlist-detail'),
+    path('favourites/', WishlistListView.as_view(), name='favourites-list'),
+    path('favourites/<int:pk>/', WishlistDetailView.as_view(), name='favourites-detail'),
+    path('favourites/toggle/', WishlistToggleView.as_view(), name='favourites-toggle'),
 
     path('addresses/from-order/', AddressFromOrderView.as_view(), name='address-from-order'),
 ]
