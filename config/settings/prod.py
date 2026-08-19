@@ -5,6 +5,8 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "api.glowseven.pt",
     "staging.glowseven.pt",
+    "api2.glowseven.pt",
+    "staging2.glowseven.pt",
     "glowseven.pt",
     "127.0.0.1",
 ]
@@ -12,6 +14,9 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://glowseven.pt",
     "https://staging.glowseven.pt",
+    "https://glowseven.pt",
+    "https://staging2.glowseven.pt",
+    
 ]
 
 SESSION_COOKIE_SECURE = True
