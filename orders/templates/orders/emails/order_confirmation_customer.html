@@ -1,0 +1,11 @@
+<h2>Olá {{ order.full_name }},</h2>
+<p>A sua encomenda #{{ order.order_ref }} foi confirmada e está a ser preparada para envio.</p>
+<p><strong>Resumo:</strong></p>
+<ul>
+{% for item in items %}
+    <li>{{ item.product_name }} x {{ item.quantity }} - €{{ item.product_price }}</li>
+{% endfor %}
+</ul>
+<p><strong>Total:</strong> €{{ total }}</p>
+<p><strong>Envio:</strong> {{ shipping_method }}</p>
+<p>Obrigado pela preferência,<br>Equipa Glow Seven</p>

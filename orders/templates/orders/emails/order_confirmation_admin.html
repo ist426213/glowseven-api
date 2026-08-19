@@ -1,0 +1,12 @@
+<h2>Nova encomenda paga #{{ order.order_ref }}</h2>
+<p><strong>Cliente:</strong> {{ customer }} ({{ email }})</p>
+<p><strong>Total:</strong> €{{ total }}</p>
+<p><strong>Itens:</strong></p>
+<ul>
+{% for item in items %}
+    <li>{{ item.product_name }} x {{ item.quantity }} - €{{ item.product_price }}</li>
+{% endfor %}
+</ul>
+<p><strong>Morada de envio:</strong><br>
+{{ order.street }}, {{ order.number }}<br>
+{{ order.postal_code }} {{ order.city }}, {{ order.country }}</p>

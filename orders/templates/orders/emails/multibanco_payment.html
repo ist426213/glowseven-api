@@ -1,0 +1,9 @@
+<h2>Olá {{ order.full_name }},</h2>
+<p>Para finalizar a sua encomenda #{{ order.order_ref }}, efetue o pagamento de <strong>€{{ amount }}</strong> utilizando os dados abaixo:</p>
+<ul>
+    <li><strong>Entidade:</strong> {{ entity }}</li>
+    <li><strong>Referência:</strong> {{ reference }}</li>
+    <li><strong>Valor:</strong> €{{ amount }}</li>
+</ul>
+<p>Após o pagamento, a sua encomenda será processada.</p>
+<p>Obrigado pela preferência,<br>Equipa Glow Seven</p>

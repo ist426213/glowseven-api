@@ -7,14 +7,19 @@ from .models import (
     HeroBanner, 
     VipMarketingSection, 
     VipSubscriber,
-    Testimonial
+    Testimonial,
+    NewsletterSubscriber,
+    ArtisanProcess
 )
 from .serializers import (
     HeroBannerSerializer, 
     VipMarketingSectionSerializer,
     VipSubscriberSerializer,
-    TestimonialSerializer
+    TestimonialSerializer,
+    NewsletterSubscriberSerializer,
+    ArtisanProcessSerializer
 )
+
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -56,3 +61,44 @@ class TestimonialListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Testimonial.objects.filter(is_active=True)
+
+
+
+class NewsletterSubscribeAPIView(CreateAPIView):
+    serializer_class = NewsletterSubscriberSerializer
+
+    def create(self, request, *args, **kwargs):
+        email = request.data.get("email")
+
+        if not email:
+            return Response(
+                {"detail": "Email is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if NewsletterSubscriber.objects.filter(email=email).exists():
+            return Response(
+                {"detail": "Email already subscribed"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return super().create(request, *args, **kwargs)
+
+
+
+
+class ArtisanProcessAPIView(RetrieveAPIView):
+    serializer_class = ArtisanProcessSerializer
+
+    def get_object(self):
+        return ArtisanProcess.objects.filter(is_active=True).first()
+
+
+
+from rest_framework.generics import CreateAPIView
+from .models import ContactMessage
+from .serializers import ContactMessageSerializer
+
+class ContactMessageCreateAPIView(CreateAPIView):
+    serializer_class = ContactMessageSerializer
+    queryset = ContactMessage.objects.all()

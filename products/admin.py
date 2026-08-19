@@ -41,8 +41,8 @@ class ProductAdmin(admin.ModelAdmin):
         "name",
         "category",
         "price",
-        "is_best_seller",      # ✅ NOVO
-        "best_seller_position", # ✅ NOVO
+        "is_best_seller",
+        "best_seller_position",
         "is_featured",
         "is_new",
         "is_active",
@@ -52,7 +52,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = (
         "category",
         "is_active",
-        "is_best_seller",      # ✅ NOVO
+        "is_best_seller",
         "is_featured",
         "is_new",
         "collections",
@@ -118,7 +118,7 @@ class ProductAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Best Sellers",  # ✅ NOVO: Secção dedicada para Best Sellers
+            "Best Sellers",
             {
                 "fields": (
                     "is_best_seller",
@@ -134,6 +134,20 @@ class ProductAdmin(admin.ModelAdmin):
                     "sku",
                     "shipping_info",
                 )
+            },
+        ),
+        # 🔽 NOVA SECÇÃO: Especificações Técnicas
+        (
+            "Technical Specifications",
+            {
+                "fields": (
+                    "materials",
+                    "heel_height",
+                    "lining",
+                    "insole",
+                    "care_instructions",
+                ),
+                "description": "Detalhes técnicos do produto (exibidos na página do produto).",
             },
         ),
         (
@@ -154,15 +168,15 @@ class ProductAdmin(admin.ModelAdmin):
         }
     }
 
-    # ✅ Bulk actions (PRO UX)
+    # Bulk actions
     actions = [
         "mark_as_featured",
         "unmark_as_featured",
         "mark_as_new",
         "unmark_as_new",
-        "mark_as_best_seller",       # ✅ NOVO
-        "unmark_as_best_seller",     # ✅ NOVO
-        "set_best_seller_position",  # ✅ NOVO
+        "mark_as_best_seller",
+        "unmark_as_best_seller",
+        "set_best_seller_position",
     ]
 
     @admin.action(description="Mark selected products as Featured")
@@ -181,8 +195,6 @@ class ProductAdmin(admin.ModelAdmin):
     def unmark_as_new(self, request, queryset):
         queryset.update(is_new=False)
 
-    # ✅ NOVAS AÇÕES PARA BEST SELLERS
-
     @admin.action(description="Mark selected products as Best Sellers")
     def mark_as_best_seller(self, request, queryset):
         queryset.update(is_best_seller=True)
@@ -193,9 +205,6 @@ class ProductAdmin(admin.ModelAdmin):
 
     @admin.action(description="Set Best Seller position (1-based)")
     def set_best_seller_position(self, request, queryset):
-        # Esta ação abre um formulário para definir a posição
-        # Mas como o Django admin não suporta facilmente isso, 
-        # vamos apenas numerar sequencialmente os selecionados
         position = 1
         for product in queryset.order_by('id'):
             product.best_seller_position = position
@@ -203,7 +212,7 @@ class ProductAdmin(admin.ModelAdmin):
             product.save()
             position += 1
         self.message_user(
-            request, 
+            request,
             f"Best Seller positions set from 1 to {position - 1} for {queryset.count()} products."
         )
 

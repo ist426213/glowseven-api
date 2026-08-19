@@ -87,6 +87,36 @@ class Product(models.Model):
         help_text="Posição no ranking de Best Sellers (1 = primeiro lugar)"
     )
 
+    materials = models.TextField(
+        blank=True,
+        default="Couro de alta qualidade com aplicações de cristais.",
+        help_text="Descrição dos materiais utilizados."
+    )
+    heel_height = models.CharField(
+        max_length=50,
+        blank=True,
+        default="6,5 cm",
+        help_text="Altura do salto (ex: 6,5 cm, 10 cm)"
+    )
+    lining = models.CharField(
+        max_length=100,
+        blank=True,
+        default="Couro macio respirável",
+        help_text="Descrição do forro."
+    )
+    insole = models.CharField(
+        max_length=100,
+        blank=True,
+        default="Espuma de alta densidade para máximo conforto",
+        help_text="Descrição da palmilha."
+    )
+    care_instructions = models.TextField(
+        blank=True,
+        default="Limpar com pano macio e seco. Guardar em local seco e arejado.",
+        help_text="Instruções de cuidados."
+    )
+
+
     # Flags (logic, not labels)
     is_active = models.BooleanField(default=True)
     is_new = models.BooleanField(default=False)

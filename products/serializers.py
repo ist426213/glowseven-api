@@ -54,6 +54,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "shipping_info",
             "tag",
             "variants",
+            "materials",
+            "heel_height",
+            "lining",
+            "insole",
+            "care_instructions",
         ]
 
     def get_image(self, obj):

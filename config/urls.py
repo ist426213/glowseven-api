@@ -1,5 +1,5 @@
 """
-URL configuration for glowseven_api project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -32,6 +32,8 @@ urlpatterns = [
     path("api/", include("catalog.urls")),
     path("api/", include("marketing.urls")),
     path("api/", include("orders.urls")),
+    path('api/accounts/', include('accounts.urls')),
+    path('api/support/', include('support.urls')),
 
     path('admin/', admin.site.urls),
 ]

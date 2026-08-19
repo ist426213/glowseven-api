@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     "corsheaders",
+    'rest_framework_simplejwt',
 
     # Local apps
     "categories",
@@ -43,7 +44,10 @@ INSTALLED_APPS = [
     "catalog",
     "core",
     "marketing",
-    "orders"
+    "orders",
+    'accounts',
+    "support",
+    
 ]
 
 # ------------------------------------------------------------------------------
@@ -63,8 +67,8 @@ MIDDLEWARE = [
 # ------------------------------------------------------------------------------
 # URLs / WSGI
 # ------------------------------------------------------------------------------
-ROOT_URLCONF = "glowseven_api.urls"
-WSGI_APPLICATION = "glowseven_api.wsgi.application"
+ROOT_URLCONF = "config.urls"
+WSGI_APPLICATION = "config.wsgi.application"
 
 # ------------------------------------------------------------------------------
 # Templates
@@ -88,10 +92,14 @@ TEMPLATES = [
 # ------------------------------------------------------------------------------
 # Internationalization
 # ------------------------------------------------------------------------------
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = 'pt-pt'
+TIME_ZONE = 'Europe/Lisbon'
 USE_I18N = True
 USE_TZ = True
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 # ------------------------------------------------------------------------------
 # Static / Media
@@ -115,3 +123,82 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# ------------------------------------------------------------------------------
+# Email
+# ------------------------------------------------------------------------------
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = env("EMAIL_HOST", default="mail1.mailbox.pt")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default=EMAIL_HOST_USER,
+)
+
+SERVER_EMAIL = EMAIL_HOST_USER
+
+# ------------------------------------------------------------------------------
+# IFTHENPAY
+# ------------------------------------------------------------------------------
+
+IFTHENPAY_MB_KEY = env("IFTHENPAY_MB_KEY", default="")
+IFTHENPAY_MBWAY_KEY = env("IFTHENPAY_MBWAY_KEY", default="")
+IFTHENPAY_ANTI_PHISHING_KEY = env("IFTHENPAY_ANTI_PHISHING_KEY")
+
+# ------------------------------------------------------------------------------
+# LOGS
+# ------------------------------------------------------------------------------
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'orders': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
+# ------------------------------------------------------------------------------
+# Autenticacao JWT
+# ------------------------------------------------------------------------------
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    # ... outras configurações
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
+
+
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
