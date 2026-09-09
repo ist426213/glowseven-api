@@ -4,7 +4,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from .models import Order
-
+from products.models import ProductVariant
+from django.db import transaction
 logger = logging.getLogger(__name__)
 
 
@@ -91,15 +92,60 @@ def send_order_confirmation_to_admin(order: Order):
 
 
 def confirm_order_payment(order: Order):
-    """Altera o status da ordem para 'paid' e envia emails de confirmação."""
+    """
+    Confirma o pagamento da ordem:
+    - Altera o status para 'paid'
+    - Subtrai stock das variantes correspondentes a cada item
+    - Envia emails de confirmação (cliente e admin)
+    """
     if order.status == "paid":
         logger.info(f"⏩ Ordem {order.order_ref} já está paga. Nenhuma ação tomada.")
         return
 
     logger.info(f"🔄 Confirmando pagamento da ordem {order.order_ref}")
-    order.status = "paid"
-    order.save()
-    logger.info(f"✅ Ordem {order.order_ref} atualizada para 'paid'")
 
+    with transaction.atomic():
+        # Subtrair stock para cada item da ordem
+        for item in order.items.all():
+            product = item.product
+            size = item.size
+            color = item.color
+            quantity = item.quantity
+
+            # Encontrar a variante correspondente (product + size + color)
+            variant = ProductVariant.objects.filter(
+                product=product,
+                size__value=size,
+                color__name=color,
+            ).first()
+
+            if variant:
+                if variant.stock < quantity:
+                    logger.error(
+                        f"Stock insuficiente para {product.name} (tamanho {size}, cor {color}). "
+                        f"Stock atual: {variant.stock}, pretendido: {quantity}"
+                    )
+                    # Lança erro para reverter a transação e manter ordem pendente
+                    raise ValueError(
+                        f"Stock insuficiente para {product.name} (tamanho {size}, cor {color})"
+                    )
+                variant.stock -= quantity
+                variant.save()
+                logger.info(
+                    f"Stock subtraído: {product.name} (tamanho {size}, cor {color}) - {quantity} unidades"
+                )
+            else:
+                # Se não encontrar variante, regista aviso e continua
+                # (podes optar por lançar erro se preferires)
+                logger.warning(
+                    f"Variante não encontrada para {product.name} (tamanho {size}, cor {color})"
+                )
+
+        # Marcar ordem como paga
+        order.status = "paid"
+        order.save()
+        logger.info(f"✅ Ordem {order.order_ref} atualizada para 'paid'")
+
+    # Enviar emails (fora da transação para não bloquear)
     send_order_confirmation_to_customer(order)
     send_order_confirmation_to_admin(order)
