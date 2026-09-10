@@ -1,6 +1,8 @@
 from django.db import models
 from categories.models import Category
 from catalog.models import Collection
+from django.core.validators import FileExtensionValidator
+
 
 class Size(models.Model):
     value = models.CharField(max_length=5)  # 36, 37, 38...
@@ -45,6 +47,14 @@ class Product(models.Model):
 
     # Media
     image = models.ImageField(upload_to="products/")
+
+    video = models.FileField(
+        upload_to="products/videos/",
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=["mp4", "webm", "mov"])],
+        help_text="Vídeo do produto (MP4, WebM ou MOV). Máx. recomendado: 20 MB.",
+    )
 
     # Content
     summary = models.CharField(

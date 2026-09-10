@@ -151,12 +151,14 @@ class ProductAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Display & Status",
+            "Media & Status",
             {
                 "fields": (
                     "image",
+                    "video",
                     "is_active",
-                )
+                ),
+                "description": "Imagem principal (obrigatória) e vídeo do produto (opcional).",
             },
         ),
     )

@@ -32,6 +32,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     image = serializers.SerializerMethodField()
+    video_url = serializers.SerializerMethodField()
     category = serializers.SlugRelatedField(read_only=True, slug_field="slug")
     in_promo = serializers.SerializerMethodField()
 
@@ -46,6 +47,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "in_promo",
             "image",
             "images",
+            "video_url",
             "category",
             "summary",
             "description",
@@ -67,12 +69,19 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
 
+    def get_video_url(self, obj):
+        request = self.context.get("request")
+        if obj.video and request:
+            return request.build_absolute_uri(obj.video.url)
+        return None
+
     def get_in_promo(self, obj):
         return bool(obj.original_price and obj.original_price > obj.price)
 
 
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    video_url = serializers.SerializerMethodField()
     category = serializers.SlugRelatedField(read_only=True, slug_field="slug")
     in_promo = serializers.ReadOnlyField()
 
@@ -86,13 +95,14 @@ class ProductSerializer(serializers.ModelSerializer):
             "original_price",
             "in_promo",
             "image",
+            "video_url",
             "category",
             "summary",
             "tag",
             "is_new",
             "is_featured",
-            "is_best_seller",  # Adicionado
-            "best_seller_position",  # Adicionado
+            "is_best_seller",  
+            "best_seller_position",
         ]
 
     def get_image(self, obj):
@@ -100,3 +110,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
         return None
+
+    def get_video_url(self, obj):
+            request = self.context.get("request")
+            if obj.video and request:
+                return request.build_absolute_uri(obj.video.url)
+            return None
