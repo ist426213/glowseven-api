@@ -107,6 +107,11 @@ class Order(models.Model):
         ("delivered", "Entregue"),
         ("cancelled", "Cancelado"),
     ]
+    FRAGRANCE_CHOICES = [
+        ("sweet", "Fragrância doce"),
+        ("woody", "Fragrância amadeirada"),
+        ("none", "Não quero fragrância"),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -130,6 +135,9 @@ class Order(models.Model):
     multibanco_ref = models.CharField(max_length=50, blank=True, default='')
     multibanco_entity = models.CharField(max_length=50, blank=True, default='')
 
+    # Fragrância
+    fragrance = models.CharField(max_length=10, choices=FRAGRANCE_CHOICES, default="none", help_text="Preferência de fragrância para a encomenda.",)
+
     # Cupão
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -140,6 +148,7 @@ class Order(models.Model):
 
     # Estado
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

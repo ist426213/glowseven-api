@@ -57,6 +57,7 @@ class CheckoutAPIView(CreateAPIView):
             shipping_cost=data["shipping_cost"],
             total=data["total"],
             status="pending",
+            fragrance=data.get("fragrance", "none"), 
         )
 
         if request.user.is_authenticated:

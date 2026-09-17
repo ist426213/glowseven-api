@@ -45,9 +45,12 @@ class MultibancoPaymentAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
         "order_ref", "id", "user", "full_name", "email",
-        "total", "status", "payment_method", "created_at"
+        "total", "status", "payment_method", "fragrance_display", "created_at"
     ]
-    list_filter = ["status", "shipping_method", "payment_method", "user"]
+    list_filter = [
+        "status", "shipping_method", "payment_method",
+        "fragrance", "user",                # 👈 NOVO filtro por fragrância
+    ]
     search_fields = ["order_ref", "full_name", "email", "id", "user__username", "user__email"]
     readonly_fields = ["created_at", "updated_at"]
     inlines = [OrderItemInline]
@@ -59,6 +62,11 @@ class OrderAdmin(admin.ModelAdmin):
             "fields": ("shipping_method", "payment_method", "mbway_payment", "multibanco_payment")
         }),
         ("Cupão", {"fields": ("coupon", "coupon_discount")}),
+        ("Fragrância", {"fields": ("fragrance",)}),   # 👈 NOVO fieldset
         ("Valores", {"fields": ("subtotal", "shipping_cost", "total")}),
         ("Estado", {"fields": ("status",)}),
     )
+
+    @admin.display(description="Fragrância", ordering="fragrance")
+    def fragrance_display(self, obj):
+        return obj.get_fragrance_display()

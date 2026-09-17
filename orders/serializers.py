@@ -47,6 +47,7 @@ class CheckoutSerializer(serializers.Serializer):
     mbway_phone = serializers.CharField(required=False, allow_blank=True)
 
     coupon_code = serializers.CharField(required=False, allow_blank=True)
+    fragrance = serializers.ChoiceField(choices=Order.FRAGRANCE_CHOICES, required=False, default="none",)
 
     items = OrderItemInputSerializer(many=True)
 
@@ -130,6 +131,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     payment_details = serializers.SerializerMethodField()
     order_id = serializers.SerializerMethodField()
+    fragrance_display = serializers.CharField(source="get_fragrance_display",read_only=True,)
 
     class Meta:
         model = Order
@@ -139,7 +141,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "payment_method", "coupon_discount", "subtotal",
             "shipping_cost", "total", "status", "created_at",
             "items", "items_count",
-            "mbway_payment", "multibanco_payment", "payment_details"
+            "mbway_payment", "multibanco_payment", "payment_details",
+            "fragrance", "fragrance_display",
         ]
 
     def get_order_id(self, obj):
