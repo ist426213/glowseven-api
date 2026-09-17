@@ -72,7 +72,12 @@ class CheckoutSerializer(serializers.Serializer):
 
         data["subtotal"] = subtotal
 
-        shipping_cost = 10 if data["shipping_method"] == "express" else 0
+        if data["shipping_method"] == "express":
+            shipping_cost = 10
+        else:
+            # Normal: grátis até 120€, 5€ acima disso
+            shipping_cost = 5 if subtotal > 120 else 0
+
         data["shipping_cost"] = shipping_cost
 
         coupon_code = data.get("coupon_code", "").strip()
