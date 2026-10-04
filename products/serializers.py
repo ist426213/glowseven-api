@@ -126,5 +126,5 @@ from .models import StockNotification
 class StockNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockNotification
-        fields = ["product", "size", "email"]
+        fields = ["product", "size", "email", "intent"]
         validators = []

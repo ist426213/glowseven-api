@@ -138,20 +138,15 @@ class StockNotificationAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         product = serializer.validated_data["product"]
-        size = serializer.validated_data["size"]
+        size = serializer.validated_data["size"].strip()
         email = serializer.validated_data["email"].lower().strip()
+        intent = serializer.validated_data["intent"]
 
-        variant = ProductVariant.objects.filter(product=product, size__value=size).first()
+        variants = ProductVariant.objects.filter(product=product, size__value=size)
 
-        if not variant:
+        if variants.filter(stock__gt=0).exists():
             return Response(
-                {"detail": "Este tamanho não existe para este produto."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if variant.stock > 0:
-            return Response(
-                {"detail": "Este tamanho encontra-se disponível."},
+                {"detail": f"O tamanho {size} encontra-se disponível para compra.", "available": True},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -159,14 +154,19 @@ class StockNotificationAPIView(APIView):
             product=product,
             size=size,
             email=email,
+            defaults={"intent": intent},
         )
+
+        if not created and notification.intent != intent:
+            notification.intent = intent
+            notification.save(update_fields=["intent"])
 
         return Response(
             {
                 "detail": (
-                    "Pedido de aviso registado com sucesso."
-                    if created
-                    else "Já registámos o teu pedido. Avisaremos por email assim que este tamanho estiver novamente disponível."
+                    "O teu pedido de encomenda foi registado. Entraremos em contacto contigo assim que possível."
+                    if intent == "ORDER"
+                    else "Registámos o teu pedido. Avisaremos por email assim que este tamanho estiver disponível."
                 ),
                 "already_registered": not created,
             },
