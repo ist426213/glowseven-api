@@ -95,6 +95,7 @@ class ProductAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "summary",
+                    "size_recommendation",
                     "description",
                     "details",
                 ),

@@ -50,6 +50,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "video_url",
             "category",
             "summary",
+            "size_recommendation",
             "description",
             "details",
             "sku",

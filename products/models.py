@@ -36,6 +36,7 @@ class Color(models.Model):
     
 
 class Product(models.Model):
+
     name = models.CharField(max_length=150)
     slug = models.SlugField(unique=True)
 
@@ -62,6 +63,13 @@ class Product(models.Model):
         blank=True,
         help_text="Resumo curto exibido no topo do produto",
     )
+
+    size_recommendation = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Recomendação de tamanho exibida abaixo do resumo do produto",
+    )
+    
     description = models.TextField(
         blank=True,
         help_text="Descrição longa do produto",
