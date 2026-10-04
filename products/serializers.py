@@ -117,3 +117,14 @@ class ProductSerializer(serializers.ModelSerializer):
             if obj.video and request:
                 return request.build_absolute_uri(obj.video.url)
             return None
+
+
+
+from rest_framework import serializers
+from .models import StockNotification
+
+class StockNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockNotification
+        fields = ["product", "size", "email"]
+        validators = []

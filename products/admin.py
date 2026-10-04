@@ -9,6 +9,7 @@ from .models import (
     Size,
     Material,
     Color,
+    StockNotification,
 )
 
 # --------------------------------------------------
@@ -265,3 +266,15 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_filter = ("size", "material", "color")
     search_fields = ("product__name",)
     autocomplete_fields = ("product", "size", "material", "color")
+
+
+# --------------------------------------------------
+# Stock Notification Admin
+# --------------------------------------------------
+@admin.register(StockNotification)
+class StockNotificationAdmin(admin.ModelAdmin):
+    list_display = ("product", "size", "email", "notified", "created_at", "notified_at")
+    list_filter = ("notified", "size", "created_at")
+    search_fields = ("product__name", "email", "size")
+    readonly_fields = ("created_at", "notified_at")
+    ordering = ("-created_at",)

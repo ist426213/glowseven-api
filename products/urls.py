@@ -6,14 +6,16 @@ from .views import (
     ProductDetailAPIView, 
     CategoryFiltersAPIView, 
     FeaturedProductListAPIView,
-    BestSellersListAPIView,  # Importar nova view
+    BestSellersListAPIView, 
+    StockNotificationAPIView,
 )
 
 urlpatterns = [
     path("", ProductListAPIView.as_view()),
     path("products/featured/", FeaturedProductListAPIView.as_view()),
-    path("products/best-sellers/", BestSellersListAPIView.as_view()),  # Nova rota
+    path("products/best-sellers/", BestSellersListAPIView.as_view()),
     path("products/category/<slug:slug>/", ProductByCategoryAPIView.as_view()),
     path("products/<slug:slug>/", ProductDetailAPIView.as_view()),
     path("categories/<slug:slug>/filters/", CategoryFiltersAPIView.as_view()),
+    path("stock-notifications/", StockNotificationAPIView.as_view(), name="stock-notification"),
 ]

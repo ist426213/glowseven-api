@@ -192,3 +192,29 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"{self.product.name} image"
+
+
+
+class StockNotification(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="stock_notifications",
+    )
+    size = models.CharField(max_length=20)
+    email = models.EmailField()
+    notified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    notified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "size", "email"],
+                name="unique_stock_notification",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.product.name} - {self.size} - {self.email}"

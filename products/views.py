@@ -121,3 +121,54 @@ class BestSellersListAPIView(ListAPIView):
             .select_related("category")
             .order_by("best_seller_position")[:10]  # Limite de 10 best sellers
         )
+
+
+
+
+from rest_framework import status
+from .models import ProductVariant, StockNotification
+from .serializers import StockNotificationSerializer
+from rest_framework.permissions import AllowAny
+
+class StockNotificationAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = StockNotificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product = serializer.validated_data["product"]
+        size = serializer.validated_data["size"]
+        email = serializer.validated_data["email"].lower().strip()
+
+        variant = ProductVariant.objects.filter(product=product, size__value=size).first()
+
+        if not variant:
+            return Response(
+                {"detail": "Este tamanho não existe para este produto."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if variant.stock > 0:
+            return Response(
+                {"detail": "Este tamanho encontra-se disponível."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        notification, created = StockNotification.objects.get_or_create(
+            product=product,
+            size=size,
+            email=email,
+        )
+
+        return Response(
+            {
+                "detail": (
+                    "Pedido de aviso registado com sucesso."
+                    if created
+                    else "Já registámos o teu pedido. Avisaremos por email assim que este tamanho estiver novamente disponível."
+                ),
+                "already_registered": not created,
+            },
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
